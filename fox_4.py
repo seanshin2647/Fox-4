@@ -52,9 +52,10 @@ class Player(pygame.sprite.Sprite):
 
     # Instead of using keybindings to move, I have opted to use the mouse until I decide not to.
     def update(self):
-        x_pos = pygame.mouse.get_pos()
+        x_pos, y_pos = pygame.mouse.get_pos()
 
-        self.rect.x = x_pos[0]
+        self.rect.x = x_pos
+        self.rect.y = y_pos
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self):
@@ -114,7 +115,7 @@ def main_loop():
         #     all_sprites_list.add(enemy)
         #     bullet_list.add(bullet)
 
-        for bullets in bullet_list:
+        for bullet in bullet_list:
             hit_list = pygame.sprite.spritecollide(bullet, enemy_list, True)
 
             for enemies in hit_list:
