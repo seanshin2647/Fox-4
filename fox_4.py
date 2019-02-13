@@ -54,8 +54,8 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         x_pos, y_pos = pygame.mouse.get_pos()
 
-        self.rect.x = x_pos
-        self.rect.y = y_pos
+        self.rect.x = x_pos + self.side_length / 2
+        self.rect.y = y_pos + self.side_length / 2
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self):
