@@ -32,7 +32,7 @@ class Enemy(pygame.sprite.Sprite):
         self.turn_back = random.randrange((DISLAY_HEIGHT * 0.5), (DISPLAY_HEIGHT * 0.8))
 
     def check_retreat(self):
-        if self.rect.y > turn_back:
+        if self.rect.y >= turn_back:
             self.speed *= -1
         
     def update(self):
@@ -92,7 +92,7 @@ def main_loop():
     player = Player()
     all_sprites_list.add(player)
 
-    max_enemy_spawn = 1
+    enemy_spawn_countdown = 0
 
     while not game_exit:
         for event in pygame.event.get():
@@ -107,14 +107,21 @@ def main_loop():
                 all_sprites_list.add(bullet)
                 bullet_list.add(bullet)
 
-        spawning_enemies = random.randrange(0, max_enemy_spawn)
-
-        # for amount in range (spawning_enemies):
-        #     enemy = Enemy()
-
-        #     all_sprites_list.add(enemy)
-        #     bullet_list.add(bullet)
-
+        enemy_spawn_countdown += random.randgrange(1, 5)
+        
+        if enemy_spawn_countdown >= 45:
+            enemy = Enemy()
+            
+            enemy_list.add(enemy)
+            all_sprites_list.add(enemy)
+            
+        for enemy in enemy_list:
+            enemy.check_retreat()
+            
+            if enemy.rect.y < 0:
+                enemy_list.remove(enemy)
+                all_sprites_list.remove(enemy)
+            
         for bullet in bullet_list:
             hit_list = pygame.sprite.spritecollide(bullet, enemy_list, True)
 
