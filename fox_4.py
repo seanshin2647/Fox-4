@@ -28,15 +28,33 @@ class Enemy(pygame.sprite.Sprite):
         self.image.fill(RED)
         self.rect = self.image.get_rect()
 
+        self.rect.y = 0
+        self.rect.x = random.randrange(0, DISPLAY_WIDTH - self.side_length)
+
+        # I couldn't think of a better name for this variable. Sorry.
+        random_number = random.randint(0, 2)
+
+        if random_number == 0:
+            self.side_speed = 0
+        elif random_number == 1:
+            self.side_speed = -3
+        elif random_number == 2:
+            self.side_speed = 3
+
         self.speed = 6
-        self.turn_back = random.randrange((DISLAY_HEIGHT * 0.5), (DISPLAY_HEIGHT * 0.8))
+        self.turn_back = random.randrange((DISPLAY_HEIGHT * 0.5), (DISPLAY_HEIGHT * 0.8))
+
+    def fire(self, player_x):
+        pass
 
     def check_retreat(self):
-        if self.rect.y >= turn_back:
+        if self.rect.y >= self.turn_back:
             self.speed *= -1
+
         
     def update(self):
-        self.rect.y -= self.speed
+        self.rect.y += self.speed
+        self.rect.x += self.side_speed
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -54,22 +72,29 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         x_pos, y_pos = pygame.mouse.get_pos()
 
-        self.rect.x = x_pos + self.side_length / 2
-        self.rect.y = y_pos + self.side_length / 2
+        self.rect.x = x_pos - self.side_length / 2
+        self.rect.y = y_pos - self.side_length / 2
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
 
-        self.width = 3
-        self.length = 10
+        self.width = 4
+        self.length = 14
 
         self.image = pygame.Surface([self.width, self.length])
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
 
     def update(self):
-        self.rect.y -= 7
+        self.rect.y -= 15
+
+# OOB stands for Out Of Bounds
+def sprite_oob_check(current_x_position):
+    if current_x_position < 0 or current_x_position > DISPLAY_WIDTH:
+        return True
+    else:
+        return False
 
 # Here begins the code for the main loop.
 pygame.init()
@@ -100,38 +125,48 @@ def main_loop():
                 game_exit = True
             
             if event.type == pygame.MOUSEBUTTONDOWN:
-                bullet = Bullet()
-                bullet.rect.x = player.rect.x + (player.side_length/2)
-                bullet.rect.y = player.rect.y
+                # Bullet on the right side.
+                right_bullet = Bullet()
+                right_bullet.rect.x = player.rect.x + (player.side_length * 0.75)
+                right_bullet.rect.y = player.rect.y
 
-                all_sprites_list.add(bullet)
-                bullet_list.add(bullet)
+                all_sprites_list.add(right_bullet)
+                bullet_list.add(right_bullet)
+                
+                # Bullet on the left side.
+                left_bullet = Bullet()
+                left_bullet.rect.x = player.rect.x + (player.side_length * 0.25)
+                left_bullet.rect.y = player.rect.y
 
-        enemy_spawn_countdown += random.randgrange(1, 5)
+                all_sprites_list.add(left_bullet)
+                bullet_list.add(left_bullet)
+
+        enemy_spawn_countdown += random.randrange(1, 5)
         
-        if enemy_spawn_countdown >= 45:
+        if enemy_spawn_countdown >= 60:
             enemy = Enemy()
-            
             enemy_list.add(enemy)
             all_sprites_list.add(enemy)
-            
+
+            enemy_spawn_countdown = 0
+
         for enemy in enemy_list:
             enemy.check_retreat()
+
+            if sprite_oob_check(enemy.rect.x):
+                enemy.side_speed *= -1
             
             if enemy.rect.y < 0:
-                enemy_list.remove(enemy)
-                all_sprites_list.remove(enemy)
+                enemy.kill()
             
         for bullet in bullet_list:
             hit_list = pygame.sprite.spritecollide(bullet, enemy_list, True)
 
             for enemies in hit_list:
-                bullet_list.remove(bullet)
-                all_sprites_list.remove(bullet)
+                bullet.kill()
 
             if bullet.rect.y < 0:
-                bullet_list.remove(bullet)
-                all_sprites_list.remove(bullet)
+                bullet.kill()
 
         all_sprites_list.update()
 
