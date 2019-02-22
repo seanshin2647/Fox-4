@@ -122,6 +122,25 @@ class Enemy_Bullet(Bullet):
         self.rect.y += 10
         self.rect.x += self.angle_direction
 
+class Shotgun_Bullet(Bullet):
+    def __init__(self, player_x, player_y, spread):
+        super().__init__()
+
+        self.image.fill(GREEN)
+
+        self.spread = spread
+
+        self.rect.x = player_x + 18
+        self.rect.y = player_y + 15
+
+        self.side_length = 8
+        self.width = self.side_length
+        self.length = self.side_length
+
+    def update(self):
+        self.rect.y -= 20
+        self.rect.x += self.spread
+
 # OOB stands for Out Of Bounds
 def sprite_oob_check(current_x_position):
     if current_x_position < 0 or current_x_position > DISPLAY_WIDTH:
@@ -176,6 +195,8 @@ def main_loop():
     bullets_hit = 0
 
     enemy_spawn_countdown = 0
+    shotgun_cooldown = 600
+    spread = -20
 
     while not game_exit:
         for event in pygame.event.get():
@@ -201,8 +222,23 @@ def main_loop():
                 
                 bullets_fired += 1
 
+            pressed_button = pygame.key.get_pressed()
+            if pressed_button[pygame.K_SPACE]:
+                if shotgun_cooldown == 600:
+                    for create_bullets in range (20):
+                        shotgun_bullet = Shotgun_Bullet(player.rect.x, player.rect.y, spread)
+                        all_sprites_list.add(shotgun_bullet)
+                        bullet_list.add(shotgun_bullet)
+                        spread += 2
+
+                    shotgun_cooldown = 0
+                    spread = -20
+
         if player_lives == 0:
             game_exit = True
+
+        if shotgun_cooldown < 600:
+            shotgun_cooldown += 1
 
         enemy_spawn_countdown += random.randrange(1, 5)
         
@@ -253,8 +289,9 @@ def main_loop():
 
         clock.tick(FPS)
 
-    print(score)
-    print(bullets_hit/bullets_fired)
+    print("Enemies killed:", score)
+    # Doing this to get a round percentage for the acuracy.
+    print(str(int((bullets_hit/bullets_fired) * 100)) + "% Accuracy")
     pygame.quit()
     quit()
 
