@@ -2,16 +2,16 @@
 # Made by Sean Shin. Project started on 29/1/2019.
 
 import pygame, time, random
-import game_classes, game_states
+from game_states import *
 
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
+# BLACK = (0, 0, 0)
+# WHITE = (255, 255, 255)
 
-RED = (200, 0, 0)
-GREEN = (0, 200, 0)
-BLUE = (0, 0, 200)
+# RED = (200, 0, 0)
+# GREEN = (0, 200, 0)
+# BLUE = (0, 0, 200)
 
-YELLOW = (200, 200, 0)
+# YELLOW = (200, 200, 0)
 
 # OOB stands for Out Of Bounds
 def sprite_oob_check(current_x_position):
@@ -61,7 +61,7 @@ clock = pygame.time.Clock()
 def main_loop():
     game_exit = False
 
-    player = game_classes.Player()
+    player = Player()
     all_sprites_list.add(player)
     player_lives = 3
     score = 0
@@ -80,7 +80,7 @@ def main_loop():
             
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # Bullet on the right side.
-                right_bullet = game_classes.Bullet()
+                right_bullet = Bullet()
                 right_bullet.rect.x = player.rect.x + (player.side_length * 0.75)
                 right_bullet.rect.y = player.rect.y
 
@@ -88,7 +88,7 @@ def main_loop():
                 bullet_list.add(right_bullet)
                 
                 # Bullet on the left side.
-                left_bullet = game_classes.Bullet()
+                left_bullet = Bullet()
                 left_bullet.rect.x = player.rect.x + (player.side_length * 0.25)
                 left_bullet.rect.y = player.rect.y
 
@@ -101,7 +101,7 @@ def main_loop():
             if pressed_button[pygame.K_SPACE]:
                 if shotgun_cooldown == 600:
                     for create_bullets in range (20):
-                        shotgun_bullet = game_classes.Shotgun_Bullet(player.rect.x, player.rect.y, spread)
+                        shotgun_bullet = Shotgun_Bullet(player.rect.x, player.rect.y, spread)
                         all_sprites_list.add(shotgun_bullet)
                         bullet_list.add(shotgun_bullet)
                         spread += 2
@@ -118,7 +118,7 @@ def main_loop():
         enemy_spawn_countdown += random.randrange(1, 5)
         
         if enemy_spawn_countdown >= 30:
-            enemy = game_classes.Enemy()
+            enemy = Enemy()
             enemy_list.add(enemy)
             all_sprites_list.add(enemy)
 
@@ -173,12 +173,3 @@ def main_loop():
     quit()
 
 main_loop()
-
-
-# Ask if Javascript is difficult to learn.
-
-# Finite State Machine
-
-# It should be classes with current_state.loop() instead of the current monstrosity.
-
-# XKCD
