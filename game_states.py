@@ -52,6 +52,7 @@ class Game_State(State):
         enemy_bullet_collision()
 
         all_sprites_list.update()
+        
     def handle_events(self):
         self.pressed_buttons = pygame.key.get_pressed()
 
@@ -115,10 +116,10 @@ class Game_State(State):
         self.spread += 2
 
     def sprite_oob_check(current_x_position):
-    if current_x_position < 0 or current_x_position > DISPLAY_WIDTH:
-        return True
-    else:
-        return False
+        if current_x_position < 0 or current_x_position > DISPLAY_WIDTH:
+            return True
+        else:
+            return False
 
     def enemy_fire(self):
         for enemy in enemy_list:
