@@ -56,10 +56,7 @@ class Game_State(State):
             if self.pressed_button[pygame.K_SPACE]:
                 if self.shotgun_cooldown == 600:
                     for create_bullets in range (20):
-                        self.shotgun_bullet = Shotgun_Bullet(self.player.rect.x, self.player.rect.y, self.spread)
-                        self.all_sprites_list.add(self.shotgun_bullet)
-                        self.bullet_list.add(self.shotgun_bullet)
-                        self.spread += 2
+                        fire_shotgun()
 
                     self.shotgun_cooldown = 0
                     self.spread = -20
@@ -94,3 +91,9 @@ class Game_State(State):
         self.bullet_list.add(self.left_bullet)
         
         self.bullets_fired += 1
+
+    def fire_shotgun(self):
+        self.shotgun_bullet = Shotgun_Bullet(self.player.rect.x, self.player.rect.y, self.spread)
+        self.all_sprites_list.add(self.shotgun_bullet)
+        self.bullet_list.add(self.shotgun_bullet)
+        self.spread += 2
