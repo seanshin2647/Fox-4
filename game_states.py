@@ -48,3 +48,6 @@ class Game_State(State):
     # For appending things to lists. I addd this to make the code cleaner.
     def append_list(self, append_object, append_list):
         append_list.add(append_object)
+
+    def shotgun_display(self, display, display_width, display_height):
+        pygame.draw.rect(display, BLUE, [(display_width * 0.75), (display_height * 0.9), (self.shotgun_cooldown / 4), 15])
