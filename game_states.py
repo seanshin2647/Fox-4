@@ -37,11 +37,14 @@ class Game_State(State):
         self.shotgun_cooldown = 600
         self.spread = -20
 
-    def render(self):
+    def render(self, display):
+        self.all_sprites_list.draw(display)
+        self.shotgun_display(self.shotgun_cooldown)
 
     def update(self):
 
     def handle_events(self):
 
+    # For appending things to lists. I addd this to make the code cleaner.
     def append_list(self, append_object, append_list):
         append_list.add(append_object)
