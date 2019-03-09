@@ -44,6 +44,30 @@ class Game_State(State):
     def update(self):
 
     def handle_events(self):
+        self.pressed_buttons = pygame.key.get_pressed()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_exit = True
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                fire_bullets()
+        
+            if self.pressed_button[pygame.K_SPACE]:
+                if self.shotgun_cooldown == 600:
+                    for create_bullets in range (20):
+                        self.shotgun_bullet = Shotgun_Bullet(self.player.rect.x, self.player.rect.y, self.spread)
+                        self.all_sprites_list.add(self.shotgun_bullet)
+                        self.bullet_list.add(self.shotgun_bullet)
+                        self.spread += 2
+
+                    self.shotgun_cooldown = 0
+                    self.spread = -20
+
+        if self.lives == 0:
+            pygame.quit()
+            quit()
+            # Make some way for this to change to gameover screen. For now, I will just have it end game.
 
     # For appending things to lists. I addd this to make the code cleaner.
     def append_list(self, append_object, append_list):
