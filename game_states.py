@@ -51,3 +51,22 @@ class Game_State(State):
 
     def shotgun_display(self, display, display_width, display_height):
         pygame.draw.rect(display, BLUE, [(display_width * 0.75), (display_height * 0.9), (self.shotgun_cooldown / 4), 15])
+    
+    def fire_bullets(self):
+        # Bullet on the right side.
+        self.right_bullet = Bullet()
+        self.right_bullet.rect.x = self.player.rect.x + (self.player.side_length * 0.75)
+        self.right_bullet.rect.y = self.player.rect.y
+
+        self.all_sprites_list.add(self.right_bullet)
+        self.bullet_list.add(self.right_bullet)
+        
+        # Bullet on the left side.
+        self.left_bullet = Bullet()
+        self.left_bullet.rect.x = self.player.rect.x + (self.player.side_length * 0.25)
+        self.left_bullet.rect.y = self.player.rect.y
+
+        self.all_sprites_list.add(self.left_bullet)
+        self.bullet_list.add(self.left_bullet)
+        
+        self.bullets_fired += 1
