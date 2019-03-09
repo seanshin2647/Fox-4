@@ -42,7 +42,16 @@ class Game_State(State):
         self.shotgun_display(self.shotgun_cooldown)
 
     def update(self):
+        self.enemy_spawn_countdown += random.randrange(1, 5)
+        
+        if self.enemy_spawn_countdown >= 30:
+            spawn_enemy()
+        
+        enemy_fire()
+        bullet_collision()
+        enemy_bullet_collision()
 
+        all_sprites_list.update()
     def handle_events(self):
         self.pressed_buttons = pygame.key.get_pressed()
 
@@ -73,6 +82,13 @@ class Game_State(State):
     def shotgun_display(self, display, display_width, display_height):
         pygame.draw.rect(display, BLUE, [(display_width * 0.75), (display_height * 0.9), (self.shotgun_cooldown / 4), 15])
     
+    def spawn_enemy(self):
+        self.enemy = Enemy()
+        self.enemy_list.add(enemy)
+        self.all_sprites_list.add(enemy)
+
+        self.enemy_spawn_countdown = 0
+
     def fire_bullets(self):
         # Bullet on the right side.
         self.right_bullet = Bullet()
@@ -97,3 +113,43 @@ class Game_State(State):
         self.all_sprites_list.add(self.shotgun_bullet)
         self.bullet_list.add(self.shotgun_bullet)
         self.spread += 2
+
+    def sprite_oob_check(current_x_position):
+    if current_x_position < 0 or current_x_position > DISPLAY_WIDTH:
+        return True
+    else:
+        return False
+
+    def enemy_fire(self):
+        for enemy in enemy_list:
+            if enemy.check_retreat():
+                enemy.fire(self.player.rect.x, self.all_sprites_list, self.enemy_bullet_list)
+
+            if sprite_oob_check(enemy.rect.x):
+                enemy.side_speed *= -1
+            
+            if enemy.rect.y < 0:
+                enemy.kill()
+
+            if pygame.sprite.spritecollide(self.player, self.enemy_list, True):
+                self.player_lives -= 1
+
+    def bullet_collision(self):
+        for bullet in bullet_list:
+            self.hit_list = pygame.sprite.spritecollide(bullet, self.enemy_list, True)
+
+            for enemies in hit_list:
+                bullet.kill()
+                self.score += 1
+                self.bullets_hit += 1
+
+            if bullet.rect.y < 0:
+                bullet.kill()
+
+    def enemy_bullet_collision(self):            
+        for enemy_bullet in enemy_bullet_list:
+            if enemy_bullet.rect.y > DISPLAY_HEIGHT:
+                enemy_bullet.kill()
+
+            if pygame.sprite.spritecollide(player, self.enemy_bullet_list, True):
+                self.player_lives -= 1
