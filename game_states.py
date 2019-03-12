@@ -26,7 +26,7 @@ class Game_State(State):
         self.player_list = pygame.sprite.Group()
 
         self.player = Player()
-        append_list(self.player, self.player_list)
+        self.all_sprites_list.add(self.player)
 
         self.score = 0
         self.lives = 3
@@ -37,21 +37,25 @@ class Game_State(State):
         self.shotgun_cooldown = 600
         self.spread = -20
 
-    def render(self, display):
+    def render(self, display, display_width, display_height):
         self.all_sprites_list.draw(display)
-        self.shotgun_display(self.shotgun_cooldown)
+        self.shotgun_display(display, display_width, display_height)
 
-    def update(self):
+    # display_height is added here for enemy_bullet_collision.
+    def update(self, display_width, display_height):
         self.enemy_spawn_countdown += random.randrange(1, 5)
         
         if self.enemy_spawn_countdown >= 30:
-            spawn_enemy()
-        
-        enemy_fire()
-        bullet_collision()
-        enemy_bullet_collision()
+            self.spawn_enemy()
 
-        all_sprites_list.update()
+        self.enemy_fire(display_width)
+        self.bullet_collision()
+        self.enemy_bullet_collision(display_height)
+
+        if self.shotgun_cooldown < 600:
+            self.shotgun_cooldown += 1
+
+        self.all_sprites_list.update()
         
     def handle_events(self):
         self.pressed_buttons = pygame.key.get_pressed()
@@ -61,32 +65,31 @@ class Game_State(State):
                 game_exit = True
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                fire_bullets()
+                self.fire_bullets()
         
-            if self.pressed_button[pygame.K_SPACE]:
+            if self.pressed_buttons[pygame.K_SPACE]:
                 if self.shotgun_cooldown == 600:
                     for create_bullets in range (20):
-                        fire_shotgun()
+                        self.fire_shotgun()
 
                     self.shotgun_cooldown = 0
                     self.spread = -20
 
         if self.lives == 0:
+            print("Enemies killed:", self.score)
+            # Doing this to get a round percentage for the acuracy.
+            print(str(int((self.bullets_hit/self.bullets_fired) * 100)) + "% Accuracy")
             pygame.quit()
             quit()
             # Make some way for this to change to gameover screen. For now, I will just have it end game.
-
-    # For appending things to lists. I addd this to make the code cleaner.
-    def append_list(self, append_object, append_list):
-        append_list.add(append_object)
 
     def shotgun_display(self, display, display_width, display_height):
         pygame.draw.rect(display, BLUE, [(display_width * 0.75), (display_height * 0.9), (self.shotgun_cooldown / 4), 15])
     
     def spawn_enemy(self):
         self.enemy = Enemy()
-        self.enemy_list.add(enemy)
-        self.all_sprites_list.add(enemy)
+        self.enemy_list.add(self.enemy)
+        self.all_sprites_list.add(self.enemy)
 
         self.enemy_spawn_countdown = 0
 
@@ -115,31 +118,31 @@ class Game_State(State):
         self.bullet_list.add(self.shotgun_bullet)
         self.spread += 2
 
-    def sprite_oob_check(current_x_position):
+    def sprite_oob_check(self, current_x_position, display_width):
         if current_x_position < 0 or current_x_position > DISPLAY_WIDTH:
             return True
         else:
             return False
 
-    def enemy_fire(self):
-        for enemy in enemy_list:
+    def enemy_fire(self, display_width):
+        for enemy in self.enemy_list:
             if enemy.check_retreat():
                 enemy.fire(self.player.rect.x, self.all_sprites_list, self.enemy_bullet_list)
 
-            if sprite_oob_check(enemy.rect.x):
+            if self.sprite_oob_check(enemy.rect.x, display_width):
                 enemy.side_speed *= -1
             
             if enemy.rect.y < 0:
                 enemy.kill()
 
             if pygame.sprite.spritecollide(self.player, self.enemy_list, True):
-                self.player_lives -= 1
+                self.lives -= 1
 
     def bullet_collision(self):
-        for bullet in bullet_list:
+        for bullet in self.bullet_list:
             self.hit_list = pygame.sprite.spritecollide(bullet, self.enemy_list, True)
 
-            for enemies in hit_list:
+            for enemies in self.hit_list:
                 bullet.kill()
                 self.score += 1
                 self.bullets_hit += 1
@@ -147,10 +150,10 @@ class Game_State(State):
             if bullet.rect.y < 0:
                 bullet.kill()
 
-    def enemy_bullet_collision(self):            
-        for enemy_bullet in enemy_bullet_list:
+    def enemy_bullet_collision(self, display_height):            
+        for enemy_bullet in self.enemy_bullet_list:
             if enemy_bullet.rect.y > DISPLAY_HEIGHT:
                 enemy_bullet.kill()
 
-            if pygame.sprite.spritecollide(player, self.enemy_bullet_list, True):
-                self.player_lives -= 1
+            if pygame.sprite.spritecollide(self.player, self.enemy_bullet_list, True):
+                self.lives -= 1

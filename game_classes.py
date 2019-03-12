@@ -119,7 +119,7 @@ class Shotgun_Bullet(Bullet):
     def __init__(self, player_x, player_y, spread):
         super().__init__()
 
-        self.image.fill(GREEN)
+        self.image.fill(YELLOW)
 
         self.spread = spread
 
