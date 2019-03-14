@@ -19,7 +19,16 @@ class Menu(State):
         super().__init__()
 
         self.title_font = pygame.font.SysFont('Roboto', 56)
-        self.subtitle_font
+        self.subtitle_font = pygame.font.SysFont('Arial', 24)
+        self.MENU_COLOR = (110, 173, 153)
+        self.TITLE_COLOR = (165, 173, 110)
+
+    def render(self, display, display_width, display_height):
+        display.fill(MENU_COLOR)
+        title = self.font.render('Fox 4', True, self.TITLE_COLOR)
+        instructions = self.font.render('Press <enter> To Start Game', True, self.TITLE_COLOR)
+        display.blit(title, ((display_width * 0.5), (display_height * 0.5)))
+        display.blit(instructions, ((display_width * 0.5), (display_height * 0.7)))
 
 class Game_State(State):
     def __init__(self):
