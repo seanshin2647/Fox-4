@@ -13,6 +13,14 @@ class State():
     def handle_events(self):
         raise NotImplementedError
 
+# WIP. Work on this later.
+class Menu(State):
+    def __init__(self):
+        super().__init__()
+
+        self.title_font = pygame.font.SysFont('Roboto', 56)
+        self.subtitle_font
+
 class Game_State(State):
     def __init__(self):
         super().__init__()
