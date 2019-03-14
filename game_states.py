@@ -30,6 +30,15 @@ class Menu(State):
         display.blit(title, ((display_width * 0.5), (display_height * 0.5)))
         display.blit(instructions, ((display_width * 0.5), (display_height * 0.7)))
 
+    def update(self):
+        pass
+
+    def handle_events(self):
+        # SUG: Think about changing this part to have events be passed in as an argument and not use pygame.event.get()
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == K_RETURN:
+                self.state_manager.change_state(Game_State)
+
 class Game_State(State):
     def __init__(self):
         super().__init__()
@@ -77,6 +86,7 @@ class Game_State(State):
     def handle_events(self):
         self.pressed_buttons = pygame.key.get_pressed()
 
+        # SUG: Think about changing this part to have events be passed in as an argument and not use pygame.event.get()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_exit = True
