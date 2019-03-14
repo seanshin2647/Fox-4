@@ -14,17 +14,17 @@ class State():
         raise NotImplementedError
 
 # WIP. Work on this later.
-class Menu(State):
+class Main_Menu(State):
     def __init__(self):
         super().__init__()
 
         self.title_font = pygame.font.SysFont('Roboto', 56)
         self.subtitle_font = pygame.font.SysFont('Arial', 24)
-        self.MENU_COLOR = (110, 173, 153)
+        self.MAIN_MENU_COLOR = (110, 173, 153)
         self.TITLE_COLOR = (165, 173, 110)
 
     def render(self, display, display_width, display_height):
-        display.fill(MENU_COLOR)
+        display.fill(MAIN_MENU_COLOR)
         title = self.font.render('Fox 4', True, self.TITLE_COLOR)
         instructions = self.font.render('Press <enter> To Start Game', True, self.TITLE_COLOR)
         display.blit(title, ((display_width * 0.5), (display_height * 0.5)))
@@ -184,3 +184,11 @@ class Game_State(State):
 
             if pygame.sprite.spritecollide(self.player, self.enemy_bullet_list, True):
                 self.lives -= 1
+
+class State_Manager():
+    def __init__():
+        self.change_state(Main_Menu())
+
+    def change_state(self, state):
+        self.state = state
+        self.state.manager = self
